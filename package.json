@@ -1,0 +1,25 @@
+{
+  "name": "getters",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test-part-1": "jest /spec/Server.spec.js -i",
+    "test-part-2": "jest /spec/Container.spec.js -i",
+    "test-part-3": "jest /spec/Cleaner.spec.js -i",
+    "test": "npm run test-part-1 && npm run test-part-2 && npm run test-part-3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.33.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "jest": "^29.4.1"
+  },
+  "dependencies": {
+    "@types/jest": "^29.4.0",
+    "@types/node": "^18.11.18"
+  }
+}
