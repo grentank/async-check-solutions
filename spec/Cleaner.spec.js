@@ -3,13 +3,10 @@ const fs = require('fs/promises');
 const Cleaner = require('../Cleaner');
 
 describe('Класс Cleaner', () => {
-
-  describe('Использование асинхронных статических методов в классе Cleaner', () => {
-    it('Нет вызова синхронных функций из модуля fs', () => {
-      expect(Cleaner.removeFile.toString()).not.toContain('unlinkSync');
-      expect(Cleaner.removeFolder.toString()).not.toContain('rmdirSync');
-    });
-  })
+  it('не использует синхронные методы из модуля fs', () => {
+    expect(Cleaner.removeFile.toString()).not.toContain('unlinkSync');
+    expect(Cleaner.removeFolder.toString()).not.toContain('rmdirSync');
+  });
 
   describe('Функционал удаления файла или папки', () => {
     it('Статический метод для удаления файла', async () => {

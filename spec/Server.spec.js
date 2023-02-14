@@ -21,41 +21,39 @@ describe('Класс Server', () => {
       containerInstanceNode,
       containerInstancePostges,
       containerInstancePyhton,
-      containerInstanceGo
-    ]
+      containerInstanceGo,
+    ],
   });
 
-  describe('Запуск сервера', () => {
+  describe('Метод startServer', () => {
     beforeEach(() => {
       serverInstance.startServer();
     });
 
-    it('Функционал запуска сервера, меняется статус', () => {
+    it('запускает сервер, меняя его статус', () => {
       const status = 'online';
       expect(serverInstance.status).toBe(status);
     });
   });
 
-  describe('Остановка сервера', () => {
+  describe('Метод stopServer', () => {
     serverInstance.stopServer();
 
-    it('Функционал остановки сервера, меняется статус', () => {
+    it('останавливает сервер, меняя его статус', () => {
       const status = 'offline';
-      expect(serverInstance.stopServer()).toBe(status);
+      expect(serverInstance.status).toBe(status);
     });
   });
 
-  describe('Защита от переопределения статуса сервера вручную', () => {
-    it('Метод запуска сервера', () => {
-      serverInstance.startServer();
+  it('не позволяет переопределять статус сервера вручную', () => {
+    serverInstance.startServer();
 
-      serverInstance.status = 'offline';
-      expect(serverInstance.status).toBe('online');
-    })
+    serverInstance.status = 'offline';
+    expect(serverInstance.status).toBe('online');
   });
 
-  describe('Добавление нового контейнера', () => {
-    it('Метод добавления контейнера', () => {
+  describe('Метод addContainer', () => {
+    it('добавляет новый контейнер на сервер', () => {
       serverInstance.addContainer(containerInstanceMongo);
 
       expect(serverInstance.allContainers).toEqual([
@@ -63,13 +61,13 @@ describe('Класс Server', () => {
         containerInstancePostges,
         containerInstancePyhton,
         containerInstanceGo,
-        containerInstanceMongo
+        containerInstanceMongo,
       ]);
-    })
+    });
   });
 
-  describe('Удаление контейнера', () => {
-    it('Метод удаления контейнера', () => {
+  describe('Метод delContainer', () => {
+    it('удаляет контейнер с сервера по его идентификатору', () => {
       const { id } = containerInstancePyhton;
 
       serverInstance.delContainer(id);
@@ -78,25 +76,25 @@ describe('Класс Server', () => {
         containerInstanceNode,
         containerInstancePostges,
         containerInstanceGo,
-        containerInstanceMongo
+        containerInstanceMongo,
       ]);
-    })
+    });
   });
 
-  describe('Логи сервера', () => {
+  describe('Метод writeServerLog', () => {
     beforeEach(async () => {
       await serverInstance.writeServerLog();
     });
 
-    it('Создаётся папка /logs/servers на одном уровне с папкой /spec', async () => {
+    it('создаёт папку /logs/servers на одном уровне с папкой /spec', async () => {
       const logsFolder = (await fs.readdir(path.join('.'))).find(folder => folder === 'logs');
       const serversFolder = (await fs.readdir(path.join('.', logsFolder))).find(folder => folder === 'servers');
 
       expect(logsFolder).toEqual(logsFolder);
       expect(serversFolder).toEqual(serversFolder);
-    })
+    });
 
-    it('Запись лога сервера', async () => {
+    it('записывает логи сервера в файл', async () => {
       const logFolder = path.join(__dirname, '..', 'logs', 'servers', `${serverInstance.os}-${serverInstance.cpu}.txt`);
       const logs = await fs.readFile(logFolder, { encoding: 'utf-8' });
       const lastServerLog = logs.split(os.EOL).at(-2);
@@ -105,11 +103,9 @@ describe('Класс Server', () => {
     });
   });
 
-  describe('Использование асинхронных методов в классе Server', () => {
-    it('Нет вызова синхронных функций из модуля fs', () => {
-      expect(serverInstance.writeServerLog.toString()).not.toContain('mkdirSync');
-      expect(serverInstance.writeServerLog.toString()).not.toContain('appendFileSync');
-      expect(serverInstance.writeServerLog.toString()).not.toContain('writeFileSync');
-    });
+  it('не использует синхронные методы из модуля fs', () => {
+    expect(serverInstance.writeServerLog.toString()).not.toContain('mkdirSync');
+    expect(serverInstance.writeServerLog.toString()).not.toContain('appendFileSync');
+    expect(serverInstance.writeServerLog.toString()).not.toContain('writeFileSync');
   });
 });
