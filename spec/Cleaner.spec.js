@@ -10,19 +10,19 @@ describe('Класс Cleaner', () => {
 
   describe('Функционал удаления файла или папки', () => {
     it('Статический метод для удаления файла', async () => {
-      const containersLog = (await fs.readdir(path.join('logs', 'containers')))[0];
-      const serversLog = (await fs.readdir(path.join('logs', 'servers')))[0];
+      const containersLog = (await fs.readdir(path.join(__dirname, '../logs/containers')))[0];
+      const serversLog = (await fs.readdir(path.join(__dirname, '../logs/servers')))[0];
 
-      expect(Cleaner.removeFile(path.join('logs', 'containers', containersLog))).toBeTruthy();
-      expect(Cleaner.removeFile(path.join('logs', 'servers', serversLog))).toBeTruthy();
+      expect(await Cleaner.removeFile(path.join(__dirname, '../logs/containers', containersLog))).toBe(true);
+      expect(await Cleaner.removeFile(path.join(__dirname, '../logs/servers', serversLog))).toBe(true);
     });
 
     it('Статический метод для удаления папки', async () => {
-      const logsFolder = (await fs.readdir(path.join(__dirname, '..'))).find(folder => folder === 'logs');
+      const logsFolder = path.join(__dirname, '../logs');
 
-      expect(Cleaner.removeFolder(path.join(logsFolder, 'containers'))).toBeTruthy();
-      expect(Cleaner.removeFolder(path.join(logsFolder, 'servers'))).toBeTruthy();
-      expect(Cleaner.removeFolder(path.join(logsFolder))).toBeTruthy();
+      expect(await Cleaner.removeFolder(path.join(logsFolder, 'containers'))).toBe(true);
+      expect(await Cleaner.removeFolder(path.join(logsFolder, 'servers'))).toBe(true);
+      expect(await Cleaner.removeFolder(path.join(logsFolder))).toBe(true);
     });
   });
 });

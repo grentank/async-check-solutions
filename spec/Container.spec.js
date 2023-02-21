@@ -1,4 +1,5 @@
 const fs = require('fs').promises;
+const { existsSync } = require('fs');
 const path = require('path');
 const os = require('os');
 const Container = require('../Container');
@@ -53,15 +54,15 @@ describe('Класс Container', () => {
     });
 
     it('создаёт папку /logs/containers на одном уровне с папкой /spec', async () => {
-      const logsFolder = (await fs.readdir(path.join('.'))).find(folder => folder === 'logs');
-      const containersFolder = (await fs.readdir(path.join('.', logsFolder))).find(folder => folder === 'containers');
+      const logsFolderExists = existsSync(path.join(__dirname, '../logs'));
+      const containersFolderExists = existsSync(path.join(__dirname, '../logs/containers'));
 
-      expect(logsFolder).toEqual(logsFolder);
-      expect(containersFolder).toEqual(containersFolder);
+      expect(logsFolderExists).toEqual(true);
+      expect(containersFolderExists).toBe(true);
     });
 
     it('записывает логи контейнера', async () => {
-      const logFolder = path.join(__dirname, '..', 'logs', 'containers', `${containerInstance.baseImage}-${containerInstance.version}.txt`);
+      const logFolder = path.join(__dirname, '../logs/containers', `${containerInstance.baseImage}-${containerInstance.version}.txt`);
       const logs = await fs.readFile(logFolder, { encoding: 'utf-8' });
       const lastContainerLog = logs.split(os.EOL).at(-2);
 
