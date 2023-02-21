@@ -1,4 +1,5 @@
 const fs = require('fs').promises;
+const { existsSync } = require('fs');
 const path = require('path');
 const os = require('os');
 const crypto = require('crypto');
@@ -7,8 +8,8 @@ const Container = require('../Container');
 
 describe('Класс Server', () => {
   const containerInstanceNode = new Container({ baseImage: 'node', architecture: 'x86-64', version: 18.14, id: crypto.randomUUID() });
-  const containerInstancePostges = new Container({ baseImage: 'postgres', architecture: 'x86-64', version: 15.1, id: crypto.randomUUID() });
-  const containerInstancePyhton = new Container({ baseImage: 'python', architecture: 'x86-64', version: 3.9, id: crypto.randomUUID() });
+  const containerInstancePostgres = new Container({ baseImage: 'postgres', architecture: 'x86-64', version: 15.1, id: crypto.randomUUID() });
+  const containerInstancePython = new Container({ baseImage: 'python', architecture: 'x86-64', version: 3.9, id: crypto.randomUUID() });
   const containerInstanceGo = new Container({ baseImage: 'go', architecture: 'x86-64', version: 1.20, id: crypto.randomUUID() });
   const containerInstanceMongo = new Container({ baseImage: 'mongo', architecture: 'x86-64', version: 6.0, id: crypto.randomUUID() });
 
@@ -19,8 +20,8 @@ describe('Класс Server', () => {
     cores: 8,
     allContainers: [
       containerInstanceNode,
-      containerInstancePostges,
-      containerInstancePyhton,
+      containerInstancePostgres,
+      containerInstancePython,
       containerInstanceGo,
     ],
   });
@@ -60,8 +61,8 @@ describe('Класс Server', () => {
 
       expect(serverInstance.allContainers).toEqual([
         containerInstanceNode,
-        containerInstancePostges,
-        containerInstancePyhton,
+        containerInstancePostgres,
+        containerInstancePython,
         containerInstanceGo,
         containerInstanceMongo,
       ]);
@@ -70,13 +71,13 @@ describe('Класс Server', () => {
 
   describe('Метод delContainer', () => {
     it('удаляет контейнер с сервера по его идентификатору', () => {
-      const { id } = containerInstancePyhton;
+      const { id } = containerInstancePython;
 
       serverInstance.delContainer(id);
 
       expect(serverInstance.allContainers).toEqual([
         containerInstanceNode,
-        containerInstancePostges,
+        containerInstancePostgres,
         containerInstanceGo,
         containerInstanceMongo,
       ]);
@@ -89,15 +90,15 @@ describe('Класс Server', () => {
     });
 
     it('создаёт папку /logs/servers на одном уровне с папкой /spec', async () => {
-      const logsFolder = (await fs.readdir(path.join('.'))).find(folder => folder === 'logs');
-      const serversFolder = (await fs.readdir(path.join('.', logsFolder))).find(folder => folder === 'servers');
+      const logsFolderExists = existsSync(path.join(__dirname, '../logs'));
+      const serversFolderExists = existsSync(path.join(__dirname, '../logs/servers'));
 
-      expect(logsFolder).toEqual(logsFolder);
-      expect(serversFolder).toEqual(serversFolder);
+      expect(logsFolderExists).toBe(true);
+      expect(serversFolderExists).toBe(true);
     });
 
     it('записывает логи сервера в файл', async () => {
-      const logFolder = path.join(__dirname, '..', 'logs', 'servers', `${serverInstance.os}-${serverInstance.cpu}.txt`);
+      const logFolder = path.join(__dirname, '../logs/servers', `${serverInstance.os}-${serverInstance.cpu}.txt`);
       const logs = await fs.readFile(logFolder, { encoding: 'utf-8' });
       const lastServerLog = logs.split(os.EOL).at(-2);
 
