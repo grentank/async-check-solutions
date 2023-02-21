@@ -37,7 +37,9 @@ describe('Класс Server', () => {
   });
 
   describe('Метод stopServer', () => {
-    serverInstance.stopServer();
+    beforeEach(() => {
+      serverInstance.stopServer();
+    });
 
     it('останавливает сервер, меняя его статус', () => {
       const status = 'offline';
