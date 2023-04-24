@@ -2,49 +2,65 @@ const fs = require('fs').promises;
 const { existsSync } = require('fs');
 const path = require('path');
 const os = require('os');
+const crypto = require('crypto');
 const Container = require('../Container');
 
 describe('Класс Container', () => {
-  const containerInstance = new Container();
+  let containerInstance;
+  let defaultContainer;
+  beforeEach(() => {
+    containerInstance = new Container({
+      baseImage: 'ubuntu', architecture: 'arm', version: 15.1, id: crypto.randomUUID(),
+    });
+    defaultContainer = new Container({ });
+  });
+
+  describe('Конструктор класса', () => {
+    it('имеет нужные поля', () => {
+      expect(containerInstance.baseImage).toBe('ubuntu');
+      expect(containerInstance.architecture).toBe('arm');
+      expect(containerInstance.version).toBe('15.1');
+    });
+  });
 
   describe('Свойство baseImage', () => {
     it('использует образ node по умолчанию', () => {
       const defaultImage = 'node';
-      expect(containerInstance.baseImage).toBe(defaultImage);
+      expect(defaultContainer.baseImage).toBe(defaultImage);
     });
 
     it('позволяет задавать базовый образ контейнера', () => {
       const image = 'postgres';
-      containerInstance.baseImage = image;
-      expect(containerInstance.baseImage).toBe(image);
+      defaultContainer.baseImage = image;
+      expect(defaultContainer.baseImage).toBe(image);
     });
   });
 
   describe('Свойство architecture', () => {
     it('использует архитектуру x86-64 по умолчанию', () => {
       const defaultArchitecture = 'x86-64';
-      expect(containerInstance.architecture).toBe(defaultArchitecture);
+      expect(defaultContainer.architecture).toBe(defaultArchitecture);
     });
   });
 
   describe('Метод getInfo', () => {
     it('возвращает описание контейнера', () => {
-      containerInstance.baseImage = 'ubuntu';
-      containerInstance.architecture = 'arm';
+      defaultContainer.baseImage = 'ubuntu';
+      defaultContainer.architecture = 'arm';
 
-      expect(containerInstance.getInfo()).toBe('BASE IMAGE: ubuntu, ARCH: arm');
+      expect(defaultContainer.getInfo()).toBe('BASE IMAGE: ubuntu, ARCH: arm');
     });
   });
 
   describe('Метод version', () => {
-    it('геттер возвращает версию контейнера', () => {
-      expect(containerInstance.version).toBe('1.0');
+    it('геттер возвращает версию контейнера по умолчанию', () => {
+      expect(defaultContainer.version).toBe('1.0');
     });
 
     it('сеттер позволяет установить версию контейнера', () => {
-      containerInstance.version = 1.1;
-      expect(typeof containerInstance.version).toBe('string');
-      expect(containerInstance.version).toBe('1.1');
+      defaultContainer.version = 1.1;
+      expect(typeof defaultContainer.version).toBe('string');
+      expect(defaultContainer.version).toBe('1.1');
     });
   });
 
@@ -61,9 +77,9 @@ describe('Класс Container', () => {
       expect(containersFolderExists).toBe(true);
     });
 
-    it('записывает логи контейнера', async () => {
-      const logFolder = path.join(__dirname, '../logs/containers', `${containerInstance.baseImage}-${containerInstance.version}.txt`);
-      const logs = await fs.readFile(logFolder, { encoding: 'utf-8' });
+    it('записывает логи контейнера, добавляя новые строки', async () => {
+      const logPath = path.join(__dirname, '../logs/containers', `${containerInstance.baseImage}-${containerInstance.version}.txt`);
+      const logs = await fs.readFile(logPath, { encoding: 'utf-8' });
       const lastContainerLog = logs.split(os.EOL).at(-2);
 
       expect(lastContainerLog).toBe('BASE IMAGE: ubuntu, ARCH: arm');

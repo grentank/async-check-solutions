@@ -7,11 +7,21 @@ const Server = require('../Server');
 const Container = require('../Container');
 
 describe('Класс Server', () => {
-  const containerInstanceNode = new Container({ baseImage: 'node', architecture: 'x86-64', version: 18.14, id: crypto.randomUUID() });
-  const containerInstancePostgres = new Container({ baseImage: 'postgres', architecture: 'x86-64', version: 15.1, id: crypto.randomUUID() });
-  const containerInstancePython = new Container({ baseImage: 'python', architecture: 'x86-64', version: 3.9, id: crypto.randomUUID() });
-  const containerInstanceGo = new Container({ baseImage: 'go', architecture: 'x86-64', version: 1.20, id: crypto.randomUUID() });
-  const containerInstanceMongo = new Container({ baseImage: 'mongo', architecture: 'x86-64', version: 6.0, id: crypto.randomUUID() });
+  const containerInstanceNode = new Container({
+    baseImage: 'node', architecture: 'x86-64', version: 18.14, id: crypto.randomUUID(),
+  });
+  const containerInstancePostgres = new Container({
+    baseImage: 'postgres', architecture: 'x86-64', version: 15.1, id: crypto.randomUUID(),
+  });
+  const containerInstancePython = new Container({
+    baseImage: 'python', architecture: 'x86-64', version: 3.9, id: crypto.randomUUID(),
+  });
+  const containerInstanceGo = new Container({
+    baseImage: 'go', architecture: 'x86-64', version: 1.20, id: crypto.randomUUID(),
+  });
+  const containerInstanceMongo = new Container({
+    baseImage: 'mongo', architecture: 'x86-64', version: 6.0, id: crypto.randomUUID(),
+  });
 
   const serverInstance = new Server({
     status: 'offline',
@@ -24,6 +34,18 @@ describe('Класс Server', () => {
       containerInstancePython,
       containerInstanceGo,
     ],
+  });
+
+  describe('Конструктор класса', () => {
+    it('задаёт свойство os', () => {
+      expect(serverInstance.os).toBe('ubuntu');
+    });
+    it('задаёт свойство cpu', () => {
+      expect(serverInstance.cpu).toBe('amd');
+    });
+    it('задаёт количество ядер', () => {
+      expect(serverInstance.cores).toBe(8);
+    });
   });
 
   describe('Метод startServer', () => {
@@ -97,9 +119,9 @@ describe('Класс Server', () => {
       expect(serversFolderExists).toBe(true);
     });
 
-    it('записывает логи сервера в файл', async () => {
-      const logFolder = path.join(__dirname, '../logs/servers', `${serverInstance.os}-${serverInstance.cpu}.txt`);
-      const logs = await fs.readFile(logFolder, { encoding: 'utf-8' });
+    it('записывает логи сервера в файл, добавляя новые строчки', async () => {
+      const logPath = path.join(__dirname, '../logs/servers', `${serverInstance.os}-${serverInstance.cpu}.txt`);
+      const logs = await fs.readFile(logPath, { encoding: 'utf-8' });
       const lastServerLog = logs.split(os.EOL).at(-2);
 
       expect(lastServerLog).toBe(`OS: ${serverInstance.os}, CPU: ${serverInstance.cpu}, CORES: ${serverInstance.cores}, CONTAINERS: ${JSON.stringify(serverInstance.allContainers)}`);
