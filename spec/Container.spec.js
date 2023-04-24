@@ -17,7 +17,7 @@ describe('Класс Container', () => {
 
   describe('Конструктор класса', () => {
     it('имеет нужные поля', () => {
-      expect(containerInstance.baseImage).toBe('mongo');
+      expect(containerInstance.baseImage).toBe('ubuntu');
       expect(containerInstance.architecture).toBe('arm');
       expect(containerInstance.version).toBe('15.1');
     });
