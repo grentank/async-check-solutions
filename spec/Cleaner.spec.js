@@ -16,8 +16,8 @@ describe('Класс Cleaner', () => {
       expect(await Cleaner.removeFile(path.join(__dirname, '../logs/containers', containersLog))).toBe(true);
       expect(await Cleaner.removeFile(path.join(__dirname, '../logs/servers', serversLog))).toBe(true);
 
-      expect((await fs.readdir(path.join(__dirname, '../logs/containers', containersLog))).length).toBe(containersLog.length - 1);
-      expect((await fs.readdir(path.join(__dirname, '../logs/servers', serversLog))).length).toBe(serversLog.length - 1);
+      expect((await fs.readdir(path.join(__dirname, '../logs/containers'))).length).toBe(containersLog.length - 1);
+      expect((await fs.readdir(path.join(__dirname, '../logs/servers'))).length).toBe(serversLog.length - 1);
     });
 
     it('Статический метод для удаления папки', async () => {
